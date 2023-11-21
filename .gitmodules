@@ -4,30 +4,30 @@
 [submodule "custom_nodes/comfyui-tooling-nodes"]
 	path = custom_nodes/comfyui-tooling-nodes
 	url = git@github.com:SeedV/comfyui-tooling-nodes.git
-[submodule "ComfyUI-Advanced-ControlNet"]
-	path = ComfyUI-Advanced-ControlNet
+[submodule "custom_nodes/ComfyUI-Advanced-ControlNet"]
+	path = custom_nodes/ComfyUI-Advanced-ControlNet
 	url = https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
-[submodule "comfyui_controlnet_aux"]
-	path = comfyui_controlnet_aux
+[submodule "custom_nodes/comfyui_controlnet_aux"]
+	path = custom_nodes/comfyui_controlnet_aux
 	url = https://github.com/Fannovel16/comfyui_controlnet_aux
-[submodule "ComfyUI-Frame-Interpolation"]
-	path = ComfyUI-Frame-Interpolation
+[submodule "custom_nodes/ComfyUI-Frame-Interpolation"]
+	path = custom_nodes/ComfyUI-Frame-Interpolation
 	url = https://github.com/Fannovel16/ComfyUI-Frame-Interpolation
-[submodule "stability-ComfyUI-nodes"]
-	path = stability-ComfyUI-nodes
+[submodule "custom_nodes/stability-ComfyUI-nodes"]
+	path = custom_nodes/stability-ComfyUI-nodes
 	url = https://github.com/Stability-AI/stability-ComfyUI-nodes
-[submodule "ComfyUI-AnimateDiff-Evolved"]
-	path = ComfyUI-AnimateDiff-Evolved
+[submodule "custom_nodes/ComfyUI-AnimateDiff-Evolved"]
+	path = custom_nodes/ComfyUI-AnimateDiff-Evolved
 	url = https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved
-[submodule "ComfyUI_FizzNodes"]
-	path = ComfyUI_FizzNodes
+[submodule "custom_nodes/ComfyUI_FizzNodes"]
+	path = custom_nodes/ComfyUI_FizzNodes
 	url = https://github.com/FizzleDorf/ComfyUI_FizzNodes
-[submodule "ComfyUI-Image-Selector"]
-	path = ComfyUI-Image-Selector
+[submodule "custom_nodes/ComfyUI-Image-Selector"]
+	path = custom_nodes/ComfyUI-Image-Selector
 	url = https://github.com/SLAPaper/ComfyUI-Image-Selector
-[submodule "ComfyUI-VideoHelperSuite"]
-	path = ComfyUI-VideoHelperSuite
+[submodule "custom_nodes/ComfyUI-VideoHelperSuite"]
+	path = custom_nodes/ComfyUI-VideoHelperSuite
 	url = https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite
-[submodule "sdxl_prompt_styler"]
-	path = sdxl_prompt_styler
+[submodule "custom_nodes/sdxl_prompt_styler"]
+	path = custom_nodes/sdxl_prompt_styler
 	url = https://github.com/twri/sdxl_prompt_styler
