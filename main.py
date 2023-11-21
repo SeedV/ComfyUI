@@ -5,6 +5,8 @@ import os
 import importlib.util
 import folder_paths
 import time
+import logging
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 def execute_prestartup_script():
     def execute_script(script_path):
@@ -92,12 +94,13 @@ def prompt_worker(q, server):
         item, item_id = q.get()
         execution_start_time = time.perf_counter()
         prompt_id = item[1]
+        logging.info("Executing prompt id {}".format(prompt_id))
         e.execute(item[2], prompt_id, item[3], item[4])
         q.task_done(item_id, e.outputs_ui)
         if server.client_id is not None:
             server.send_sync("executing", { "node": None, "prompt_id": prompt_id }, server.client_id)
 
-        print("Prompt executed in {:.2f} seconds".format(time.perf_counter() - execution_start_time))
+        logging.info("Prompt id {} executed in {:.2f} seconds".format(prompt_id, time.perf_counter() - execution_start_time))
         gc.collect()
         comfy.model_management.soft_empty_cache()
 
