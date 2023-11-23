@@ -4,10 +4,19 @@ from scipy import integrate
 import torch
 from torch import nn
 import torchsde
-from tqdm.auto import trange, tqdm
+# from tqdm.auto import trange, tqdm
 
 from . import utils
+import os
+show_tqdm = os.getenv("SHOW_TQDM", "false").lower() == "true"
+def no_op_tqdm(iterable, *args, **kwargs):
+    return iterable
 
+if show_tqdm:
+    from tqdm.auto import tqdm, trange
+else:
+    tqdm = no_op_tqdm
+    trange = no_op_tqdm
 
 def append_zero(x):
     return torch.cat([x, x.new_zeros([1])])
