@@ -13,6 +13,8 @@ from PIL import Image, ImageOps
 from PIL.PngImagePlugin import PngInfo
 import numpy as np
 import safetensors.torch
+import requests
+from urllib.parse import urljoin
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
 
@@ -56,6 +58,38 @@ class CLIPTextEncode:
         tokens = clip.tokenize(text)
         cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
         return ([[cond, {"pooled_output": pooled}]], )
+
+class GptCLIPTextEncode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"text": ("STRING", {"multiline": True}), "clip": ("CLIP", ),}}
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "encode"
+
+    CATEGORY = "conditioning"
+
+    def encode(self, clip, text):
+        text = self.prompt_refine(text)
+        tokens = clip.tokenize(text)
+        cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
+        return ([[cond, {"pooled_output": pooled}]], )
+    
+    def prompt_refine(self, input):
+        base_url = os.getenv("GPT_URL", "http://example.com:5000/")
+        url = urljoin(base_url, "translation/")
+        params = {
+            "prompt": input,
+        }
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            res = response.json()
+            print("gpt prompt refine: {}".format(res))
+            return res
+        else:
+            print("gpt Failed with status code:", response.status_code)
+            print("prompt text no refine: {}".format(input))
+            return input
+    
 
 class ConditioningCombine:
     @classmethod
@@ -1595,6 +1629,7 @@ NODE_CLASS_MAPPINGS = {
     "KSampler": KSampler,
     "CheckpointLoaderSimple": CheckpointLoaderSimple,
     "CLIPTextEncode": CLIPTextEncode,
+    "GptCLIPTextEncode": GptCLIPTextEncode,
     "CLIPSetLastLayer": CLIPSetLastLayer,
     "VAEDecode": VAEDecode,
     "VAEEncode": VAEEncode,
@@ -1676,6 +1711,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CLIPVisionEncode": "CLIP Vision Encode",
     "StyleModelApply": "Apply Style Model",
     "CLIPTextEncode": "CLIP Text Encode (Prompt)",
+    "GptCLIPTextEncode": "Gpt CLIP Text Encode (Prompt)",
     "CLIPSetLastLayer": "CLIP Set Last Layer",
     "ConditioningCombine": "Conditioning (Combine)",
     "ConditioningAverage ": "Conditioning (Average)",
