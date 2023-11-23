@@ -1,7 +1,20 @@
+import tqdm
+from tqdm import tqdm as tqdm_base, trange as trange_base
+import os
+if os.getenv("SHOW_TQDM","false")=="false":
+    def new_tqdm(*args,**kwargs): 
+        kwargs["disable"]=True
+        return tqdm_base(*args,**kwargs)
+    tqdm.tqdm=new_tqdm
+    def new_trange(*args,**kwargs): 
+        kwargs["disable"]=True
+        return trange_base(*args,**kwargs)
+    tqdm.trange=new_trange
+
 import comfy.options
 comfy.options.enable_args_parsing()
 
-import os
+
 import importlib.util
 import folder_paths
 import time
