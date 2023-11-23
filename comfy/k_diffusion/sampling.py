@@ -8,15 +8,24 @@ import torchsde
 
 from . import utils
 import os
+from tqdm.auto import tqdm as original_tqdm, trange as original_trange
+
 show_tqdm = os.getenv("SHOW_TQDM", "false").lower() == "true"
+
 def no_op_tqdm(iterable, *args, **kwargs):
     return iterable
 
-if show_tqdm:
-    from tqdm.auto import tqdm, trange
-else:
-    tqdm = no_op_tqdm
-    trange = no_op_tqdm
+def tqdm(*args, **kwargs):
+    if show_tqdm:
+        return original_tqdm(*args, **kwargs)
+    else:
+        return no_op_tqdm(range(*args), **kwargs)
+
+def trange(*args, **kwargs):
+    if show_tqdm:
+        return original_trange(*args, **kwargs)
+    else:
+        return no_op_tqdm(range(*args), **kwargs)
 
 def append_zero(x):
     return torch.cat([x, x.new_zeros([1])])
