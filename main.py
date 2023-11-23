@@ -1,13 +1,15 @@
 import tqdm
 from tqdm import tqdm as tqdm_base, trange as trange_base
 import os
-if os.getenv("SHOW_TQDM","false")=="false":
+if os.getenv("SHOW_TQDM","false").lower()=="false":
     def new_tqdm(*args,**kwargs): 
-        kwargs["disable"]=True
+        # kwargs["disable"]=True
+        kwargs["bar_format"] = "{n_fmt}/{total_fmt}"
         return tqdm_base(*args,**kwargs)
     tqdm.tqdm=new_tqdm
     def new_trange(*args,**kwargs): 
-        kwargs["disable"]=True
+        # kwargs["disable"]=True
+        kwargs["bar_format"] = "{n_fmt}/{total_fmt}"
         return trange_base(*args,**kwargs)
     tqdm.trange=new_trange
 
