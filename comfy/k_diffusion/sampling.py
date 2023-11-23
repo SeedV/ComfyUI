@@ -1,10 +1,14 @@
+import os
 import math
 
 from scipy import integrate
 import torch
 from torch import nn
 import torchsde
-from tqdm.auto import trange, tqdm
+if os.getenv("SHOW_TQDM", "false").lower() == "false":
+    from tqdm import tqdm, trange
+else:
+    from tqdm.auto import tqdm, trange
 
 from . import utils
 
