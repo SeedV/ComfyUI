@@ -71,24 +71,31 @@ class GptCLIPTextEncode:
     def encode(self, clip, user_text, default_text):
         user_text = self.prompt_refine(user_text)
         text = user_text + ', ' + default_text
+        print("modle input prompt text: {}".format(text))
         tokens = clip.tokenize(text)
         cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
         return ([[cond, {"pooled_output": pooled}]], )
     
     def prompt_refine(self, input):
+        print("user input prompt: {}".format(input))
         base_url = os.getenv("GPT_URL", "http://example.com:5000/")
         url = urljoin(base_url, "translation/")
-        params = {
-            "prompt": input,
-        }
-        response = requests.get(url, params=params)
-        if response.status_code == 200:
-            res = response.json()
-            print("gpt prompt refine: {}".format(res))
-            return res
-        else:
-            print("gpt Failed with status code:", response.status_code)
-            print("prompt text no refine: {}".format(input))
+        params = {"prompt": input}
+        try:
+            response = requests.get(url, params=params, timeout=(10, 20))
+
+            if response.status_code == 200:
+                res = response.json()
+                print("use gpt prompt refine: {}".format(res))
+                return res
+            else:
+                print("Failed with status code:", response.status_code)
+                print('use user text: {}'.format(input))
+                return input
+
+        except requests.exceptions.RequestException as e:
+            print("An error occurred of gpt: ", e)
+            print('use user text: {}'.format(input))
             return input
     
 

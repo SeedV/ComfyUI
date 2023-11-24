@@ -27,7 +27,7 @@
 	url = https://github.com/SLAPaper/ComfyUI-Image-Selector
 [submodule "custom_nodes/ComfyUI-VideoHelperSuite"]
 	path = custom_nodes/ComfyUI-VideoHelperSuite
-	url = https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite
+	url = git@github.com:SeedV/ComfyUI-VideoHelperSuite.git
 [submodule "custom_nodes/sdxl_prompt_styler"]
 	path = custom_nodes/sdxl_prompt_styler
 	url = https://github.com/twri/sdxl_prompt_styler
