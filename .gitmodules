@@ -31,3 +31,6 @@
 [submodule "custom_nodes/sdxl_prompt_styler"]
 	path = custom_nodes/sdxl_prompt_styler
 	url = https://github.com/twri/sdxl_prompt_styler
+[submodule "custom_nodes/masquerade-nodes-comfyui"]
+	path = custom_nodes/masquerade-nodes-comfyui
+	url = https://github.com/BadCafeCode/masquerade-nodes-comfyui.git
