@@ -31,7 +31,7 @@ class TimestepBlock(nn.Module):
         Apply the module to `x` given `emb` timestep embeddings.
         """
 
-#This is needed because accelerate makes a copy of transformer_options which breaks "current_index"
+#This is needed because accelerate makes a copy of transformer_options which breaks "transformer_index"
 def forward_timestep_embed(ts, x, emb, context=None, transformer_options={}, output_shape=None, time_context=None, num_video_frames=None, image_only_indicator=None):
     for layer in ts:
         if isinstance(layer, VideoResBlock):
@@ -40,11 +40,12 @@ def forward_timestep_embed(ts, x, emb, context=None, transformer_options={}, out
             x = layer(x, emb)
         elif isinstance(layer, SpatialVideoTransformer):
             x = layer(x, context, time_context, num_video_frames, image_only_indicator, transformer_options)
-            transformer_options["current_index"] += 1
+            if "transformer_index" in transformer_options:
+                transformer_options["transformer_index"] += 1
         elif isinstance(layer, SpatialTransformer):
             x = layer(x, context, transformer_options)
-            if "current_index" in transformer_options:
-                transformer_options["current_index"] += 1
+            if "transformer_index" in transformer_options:
+                transformer_options["transformer_index"] += 1
         elif isinstance(layer, Upsample):
             x = layer(x, output_shape=output_shape)
         else:
@@ -176,7 +177,7 @@ class ResBlock(TimestepBlock):
             padding = kernel_size // 2
 
         self.in_layers = nn.Sequential(
-            nn.GroupNorm(32, channels, dtype=dtype, device=device),
+            operations.GroupNorm(32, channels, dtype=dtype, device=device),
             nn.SiLU(),
             operations.conv_nd(dims, channels, self.out_channels, kernel_size, padding=padding, dtype=dtype, device=device),
         )
@@ -205,12 +206,11 @@ class ResBlock(TimestepBlock):
                 ),
             )
         self.out_layers = nn.Sequential(
-            nn.GroupNorm(32, self.out_channels, dtype=dtype, device=device),
+            operations.GroupNorm(32, self.out_channels, dtype=dtype, device=device),
             nn.SiLU(),
             nn.Dropout(p=dropout),
-            zero_module(
-                operations.conv_nd(dims, self.out_channels, self.out_channels, kernel_size, padding=padding, dtype=dtype, device=device)
-            ),
+            operations.conv_nd(dims, self.out_channels, self.out_channels, kernel_size, padding=padding, dtype=dtype, device=device)
+            ,
         )
 
         if self.out_channels == channels:
@@ -809,13 +809,13 @@ class UNetModel(nn.Module):
                 self._feature_size += ch
 
         self.out = nn.Sequential(
-            nn.GroupNorm(32, ch, dtype=self.dtype, device=device),
+            operations.GroupNorm(32, ch, dtype=self.dtype, device=device),
             nn.SiLU(),
             zero_module(operations.conv_nd(dims, model_channels, out_channels, 3, padding=1, dtype=self.dtype, device=device)),
         )
         if self.predict_codebook_ids:
             self.id_predictor = nn.Sequential(
-            nn.GroupNorm(32, ch, dtype=self.dtype, device=device),
+            operations.GroupNorm(32, ch, dtype=self.dtype, device=device),
             operations.conv_nd(dims, model_channels, n_embed, 1, dtype=self.dtype, device=device),
             #nn.LogSoftmax(dim=1)  # change to cross_entropy and produce non-normalized logits
         )
@@ -830,7 +830,7 @@ class UNetModel(nn.Module):
         :return: an [N x C x ...] Tensor of outputs.
         """
         transformer_options["original_shape"] = list(x.shape)
-        transformer_options["current_index"] = 0
+        transformer_options["transformer_index"] = 0
         transformer_patches = transformer_options.get("patches", {})
 
         num_video_frames = kwargs.get("num_video_frames", self.default_num_video_frames)
@@ -841,14 +841,14 @@ class UNetModel(nn.Module):
             self.num_classes is not None
         ), "must specify y if and only if the model is class-conditional"
         hs = []
-        t_emb = timestep_embedding(timesteps, self.model_channels, repeat_only=False).to(self.dtype)
+        t_emb = timestep_embedding(timesteps, self.model_channels, repeat_only=False).to(x.dtype)
         emb = self.time_embed(t_emb)
 
         if self.num_classes is not None:
             assert y.shape[0] == x.shape[0]
             emb = emb + self.label_emb(y)
 
-        h = x.type(self.dtype)
+        h = x
         for id, module in enumerate(self.input_blocks):
             transformer_options["block"] = ("input", id)
             h = forward_timestep_embed(module, h, emb, context, transformer_options, time_context=time_context, num_video_frames=num_video_frames, image_only_indicator=image_only_indicator)
