@@ -34,3 +34,6 @@
 [submodule "custom_nodes/masquerade-nodes-comfyui"]
 	path = custom_nodes/masquerade-nodes-comfyui
 	url = https://github.com/BadCafeCode/masquerade-nodes-comfyui.git
+[submodule "custom_nodes/ComfyUI_IPAdapter_plus"]
+	path = custom_nodes/ComfyUI_IPAdapter_plus
+	url = https://github.com/cubiq/ComfyUI_IPAdapter_plus
