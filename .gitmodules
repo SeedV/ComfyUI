@@ -37,3 +37,6 @@
 [submodule "custom_nodes/ComfyUI_IPAdapter_plus"]
 	path = custom_nodes/ComfyUI_IPAdapter_plus
 	url = https://github.com/cubiq/ComfyUI_IPAdapter_plus
+[submodule "custom_nodes/ComfyUI_ImageProcessing"]
+	path = custom_nodes/ComfyUI_ImageProcessing
+	url = https://github.com/bvhari/ComfyUI_ImageProcessing
